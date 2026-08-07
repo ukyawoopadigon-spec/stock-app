@@ -2,232 +2,89 @@
 <html lang="my">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ပစ္စည်းစာရင်းနှင့် ငွေစာရင်း</title>
-    <!-- PWA settings -->
     <link rel="manifest" href="manifest.json">
     <link rel="icon" href="icon-192.png">
     <link rel="apple-touch-icon" href="icon-192.png">
-    <meta name="theme-color" content="#1976D2">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-
+    <meta name="theme-color" content="#2196F3">
     <style>
-        /* Native App Feel Basics */
-        :root {
-            --primary-color: #1976D2; /* Darker Blue */
-            --accent-color: #2196F3;
-            --bg-color: #F5F7FA;
-            --surface-color: #FFFFFF;
-            --text-primary: #212121;
-            --text-secondary: #757575;
-            --shadow: 0 2px 5px rgba(0,0,0,0.05);
-            --border-radius: 8px;
-        }
-
-        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-
-        body { 
-            font-family: system-ui, -apple-system, sans-serif; 
-            margin: 0; 
-            padding: 0; 
-            background: var(--bg-color); 
-            color: var(--text-primary);
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden; /* Prevent body scroll */
-        }
-
-        /* App Bar (Fixed Header) */
-        header {
-            background: var(--primary-color);
-            color: white;
-            padding: 15px;
-            text-align: center;
-            font-size: 18px;
-            font-weight: bold;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            position: sticky;
-            top: 0;
-            z-index: 100;
-        }
-
-        /* Input Section (Card Style) */
-        .add-section {
-            background: var(--surface-color);
-            padding: 15px;
-            margin: 10px;
-            border-radius: var(--border-radius);
-            box-shadow: var(--shadow);
-        }
-
-        .input-group { 
-            display: grid;
-            grid-template-columns: 2fr 1fr 1fr;
-            gap: 10px; 
-            margin-bottom: 12px; 
-        }
-
-        input { 
-            width: 100%;
-            padding: 12px; 
-            border: 1px solid #E0E0E0; 
-            border-radius: 4px; 
-            font-size: 15px; 
-            background: #FAFAFA;
-            transition: border-color 0.2s;
-        }
-        input:focus {
-            outline: none;
-            border-color: var(--accent-color);
-            background: #fff;
-        }
-
-        .btn-add { 
-            width: 100%; 
-            padding: 14px; 
-            border: none; 
-            border-radius: 4px; 
-            font-size: 16px; 
-            cursor: pointer; 
-            background: var(--accent-color); 
-            color: white; 
-            font-weight: bold; 
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            box-shadow: 0 2px 4px rgba(33, 150, 243, 0.3);
-        }
-        .btn-add:active { background: var(--primary-color); transform: translateY(1px); }
-
-        /* Table Container (Scrollable Area) */
-        .table-container {
-            flex: 1;
-            overflow-y: auto; /* Scroll only here */
-            padding: 0 10px;
-            margin-bottom: 60px; /* Space for footer */
-            -webkit-overflow-scrolling: touch;
-        }
-
-        table { 
-            width: 100%; 
-            border-collapse: collapse; 
-            background: var(--surface-color); 
-            border-radius: var(--border-radius); 
-            overflow: hidden; 
-            box-shadow: var(--shadow);
-            margin-bottom: 10px;
-        }
-
-        th, td { padding: 16px 10px; text-align: left; border-bottom: 1px solid #EEEEEE; font-size: 14px; }
-        th { background: #F5F5F5; color: var(--text-secondary); font-weight: 600; text-transform: uppercase; font-size: 12px; }
-        
+        body { font-family: sans-serif; padding: 15px; background: #f4f6f9; color: #333; }
+        h3 { text-align: center; color: #222; }
+        .input-group { display: flex; gap: 8px; margin-bottom: 12px; }
+        input { flex: 1; padding: 10px; border: 1px solid #ccc; border-radius: 4px; font-size: 14px; }
+        button { width: 100%; padding: 12px; border: none; border-radius: 4px; font-size: 15px; cursor: pointer; }
+        .btn-add { background: #2196F3; color: white; font-weight: bold; margin-bottom: 20px; }
+        table { width: 100%; border-collapse: collapse; background: white; border-radius: 6px; overflow: hidden; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        th, td { padding: 12px 10px; text-align: left; border-bottom: 1px solid #eee; font-size: 14px; }
+        th { background: #e0e0e0; color: #000; font-weight: bold; }
         .text-right { text-align: right; }
         .text-center { text-align: center; }
-        
-        tr:active { background: #F0F7FF; } /* Visual feedback on touch */
-
-        /* Native App Style Footer */
-        .footer-bar {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            background: #424242; /* Dark Footer */
-            color: white;
-            padding: 15px 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            box-shadow: 0 -2px 5px rgba(0,0,0,0.1);
-            font-weight: bold;
-            font-size: 16px;
-            z-index: 90;
-        }
-
-        /* Popup Window Style (Modernized) */
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); align-items: center; justify-content: center; z-index: 1000; padding: 20px; }
-        .modal-content { background: var(--surface-color); padding: 25px; border-radius: 12px; width: 100%; max-width: 340px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); animation: slideIn 0.3s ease-out; }
-        
-        @keyframes slideIn { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-
-        .modal-title { font-weight: bold; font-size: 18px; margin-bottom: 8px; color: var(--text-primary); }
-        .modal-sub { font-size: 14px; color: var(--text-secondary); margin-bottom: 20px; }
-
-        .modal-buttons { display: flex; gap: 12px; margin-top: 25px; }
-        .modal-buttons button { flex: 1; padding: 14px; border: none; border-radius: 4px; font-size: 15px; font-weight: bold; cursor: pointer; }
-        
+        tr:hover { background: #f1f1f1; cursor: pointer; }
+        .footer-row { background: #9E9E9E; color: white; font-weight: bold; }
+        /* Popup Window Style */
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); align-items: center; justify-content: center; }
+        .modal-content { background: white; padding: 20px; border-radius: 8px; width: 85%; max-width: 400px; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
+        .modal-title { font-weight: bold; font-size: 16px; margin-bottom: 10px; }
+        .modal-buttons { display: flex; gap: 10px; margin-top: 15px; }
         .btn-save { background: #4CAF50; color: white; }
-        .btn-save:active { background: #388E3C; }
-        .btn-cancel { background: #EEEEEE; color: var(--text-primary); }
-        .btn-cancel:active { background: #E0E0E0; }
-
-        .sign-toggle { display: flex; gap: 10px; margin: 15px 0; }
-        .sign-btn { flex: 1; padding: 15px; border: 2px solid #E0E0E0; border-radius: var(--border-radius); background: #FAFAFA; color: var(--text-secondary); font-size: 15px; font-weight: bold; cursor: pointer; transition: 0.2s; }
-        .sign-btn.active { border-color: var(--accent-color); background: #E3F2FD; color: var(--accent-color); }
-
-        #changeQty { font-size: 18px; padding: 15px; text-align: center; }
-
+        .btn-cancel { background: #f44336; color: white; }
+        .sign-toggle { display: flex; gap: 8px; margin: 10px 0; }
+        .sign-btn { flex: 1; padding: 12px; border: 2px solid #ccc; border-radius: 4px; background: #f4f6f9; color: #333; font-size: 15px; font-weight: bold; }
+        .sign-btn.active { border-color: #2196F3; background: #2196F3; color: white; }
     </style>
 </head>
 <body>
 
-    <header>ပစ္စည်းအဝင်အထွက်စာရင်း</header>
+    <h3>ပစ္စည်းအဝင်အထွက်စာရင်း</h3>
 
-    <!-- ဖြည့်စွက်ရန်နေရာ (Card UI) -->
-    <div class="add-section">
-        <div class="input-group">
-            <input type="text" id="itemName" placeholder="အမျိုးအမည်">
-            <input type="number" inputmode="numeric" id="itemQty" placeholder="ခုရေ">
-            <input type="number" inputmode="numeric" id="itemPrice" placeholder="ဈေး">
-        </div>
-        <button class="btn-add" onclick="addItem()">+ စာရင်းသွင်းရန်</button>
+    <!-- ဖြည့်စွက်ရန်နေရာ -->
+    <div class="input-group">
+        <input type="text" id="itemName" placeholder="အမျိုးအမည် (မြန်မာ)">
+        <input type="number" id="itemQty" placeholder="အရေအတွက်">
+        <input type="number" id="itemPrice" placeholder="ဈေးနှုန်း">
     </div>
+    <button class="btn-add" onclick="addItem()">ပစ္စည်းအသစ် စာရင်းသွင်းရန်</button>
 
-    <!-- ဇယားကွက် (Scroll Area) -->
-    <div class="table-container">
-        <table>
-            <thead>
-                <tr>
-                    <th>အမည်</th>
-                    <th class="text-center">လက်ကျန်</th>
-                    <th class="text-right">ဈေးနှုန်း</th>
-                    <th class="text-right">စုစုပေါင်း</th>
-                </tr>
-            </thead>
-            <tbody id="tableBody">
-                <!-- ဒေတာများ ဤနေရာတွင် ပေါ်လာမည် -->
-            </tbody>
-        </table>
-    </div>
-
-    <!-- Native Style Fixed Footer -->
-    <div class="footer-bar">
-        <span>စုစုပေါင်းကျသင့်ငွေ</span>
-        <span id="grandTotal">0</span>
-    </div>
+    <!-- ဇယားကွက် -->
+    <table>
+        <thead>
+            <tr>
+                <th>အမျိုးအမည်</th>
+                <th class="text-center">လက်ကျန်</th>
+                <th class="text-right">ဈေးနှုန်း</th>
+                <th class="text-right">စုစုပေါင်းငွေ</th>
+            </tr>
+        </thead>
+        <tbody id="tableBody">
+            <!-- ဒေတာများ ဤနေရာတွင် ပေါ်လာမည် -->
+        </tbody>
+        <tfoot>
+            <tr class="footer-row">
+                <td colspan="3">စုစုပေါင်းကျသင့်ငွေ</td>
+                <td id="grandTotal" class="text-right">0</td>
+            </tr>
+        </tfoot>
+    </table>
 
     <!-- အတိုးအလျှော့လုပ်မည့် ပေါပ်အပ် (Modal Popup) -->
     <div id="updateModal" class="modal">
         <div class="modal-content">
             <div id="modalTitle" class="modal-title"></div>
-            <div class="modal-sub">တိုး (သို့) လျှော့ ကို ရွေးပြီး အရေအတွက် ရိုက်ထည့်ပါ။</div>
+            <p style="font-size:13px; color:#666;">တိုး (သို့) လျှော့ ကို ရွေးပြီး အရေအတွက် ရိုက်ထည့်ပါ။</p>
             <div class="sign-toggle">
                 <button type="button" id="signPlus" class="sign-btn active" onclick="setSign(1)">+ တိုးမည်</button>
                 <button type="button" id="signMinus" class="sign-btn" onclick="setSign(-1)">− လျှော့မည်</button>
             </div>
             <input type="number" inputmode="numeric" min="0" id="changeQty" placeholder="အရေအတွက်">
             <div class="modal-buttons">
-                <button class="btn-cancel" onclick="closeModal()">မလုပ်တော့ပါ</button>
                 <button class="btn-save" onclick="saveUpdate()">ပြင်ဆင်မည်</button>
+                <button class="btn-cancel" onclick="closeModal()">မလုပ်တော့ပါ</button>
             </div>
         </div>
     </div>
 
     <script>
-        // JS coding remains the same as it was functional.
-        // I just kept the variable and function names.
-
         let stockData = JSON.parse(localStorage.getItem('stockData')) || [];
         let selectedIndex = -1;
 
@@ -240,6 +97,91 @@
                 let total = item.qty * item.price;
                 grandTotal += total;
 
-                // Added text-right/center classes to match header
                 let row = `<tr onclick="openModal(${index})">
-                    <td style="font-weight:500;">${item.name}
+                    <td>${item.name}</td>
+                    <td class="text-center">${item.qty}</td>
+                    <td class="text-right">${item.price}</td>
+                    <td class="text-right">${total}</td>
+                </tr>`;
+                tbody.innerHTML += row;
+            });
+
+            document.getElementById('grandTotal').innerText = grandTotal;
+            localStorage.setItem('stockData', JSON.stringify(stockData));
+        }
+
+        function addItem() {
+            const name = document.getElementById('itemName').value.trim();
+            const qty = parseInt(document.getElementById('itemQty').value);
+            const price = parseInt(document.getElementById('itemPrice').value);
+
+            if (!name || isNaN(qty) || isNaN(price)) {
+                alert('အချက်အလက် အားလုံးကို မှန်ကန်စွာ ဖြည့်စွက်ပါ');
+                return;
+            }
+
+            // အမည်တူရှိမရှိ စစ်ဆေးခြင်း
+            if (stockData.some(item => item.name === name)) {
+                alert('ဤပစ္စည်းအမည် ရှိနှင့်ပြီးသားဖြစ်ပါသည်');
+                return;
+            }
+
+            stockData.push({ name, qty, price });
+            document.getElementById('itemName').value = '';
+            document.getElementById('itemQty').value = '';
+            document.getElementById('itemPrice').value = '';
+            updateTable();
+        }
+
+        let changeSign = 1;
+
+        function setSign(sign) {
+            changeSign = sign;
+            document.getElementById('signPlus').classList.toggle('active', sign === 1);
+            document.getElementById('signMinus').classList.toggle('active', sign === -1);
+        }
+
+        function openModal(index) {
+            selectedIndex = index;
+            const item = stockData[index];
+            document.getElementById('modalTitle').innerText = `${item.name} (လက်ကျန်: ${item.qty})`;
+            document.getElementById('changeQty').value = '';
+            setSign(1);
+            document.getElementById('updateModal').style.display = 'flex';
+        }
+
+        function closeModal() {
+            document.getElementById('updateModal').style.display = 'none';
+        }
+
+        function saveUpdate() {
+            const rawValue = parseInt(document.getElementById('changeQty').value);
+            if (isNaN(rawValue) || rawValue < 0) {
+                alert('အရေအတွက် ထည့်သွင်းပါ');
+                return;
+            }
+
+            const change = rawValue * changeSign;
+            let newQty = stockData[selectedIndex].qty + change;
+            if (newQty < 0) {
+                alert('လက်ကျန်ပစ္စည်း ၀ ထက် မနည်းရပါ');
+                return;
+            }
+
+            stockData[selectedIndex].qty = newQty;
+            closeModal();
+            updateTable();
+        }
+
+        // စဖွင့်ချင်း ဇယားဆွဲရန်
+        updateTable();
+
+        // PWA - Service Worker မှတ်ပုံတင်ခြင်း
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('sw.js').catch(() => {});
+            });
+        }
+    </script>
+</body>
+</html>
